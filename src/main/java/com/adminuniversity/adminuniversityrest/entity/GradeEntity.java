@@ -1,6 +1,6 @@
 package com.adminuniversity.adminuniversityrest.entity;
 
-import com.adminuniversity.adminuniversityrest.entity.user.Student;
+import com.adminuniversity.adminuniversityrest.entity.user.StudentEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "grade")
-public class Grade {
+public class GradeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +19,9 @@ public class Grade {
 
     @ManyToOne
     @JoinColumn(name = "student_id")
-    private Student student;
+    private StudentEntity student;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
-    private Course course;
+    private CourseEntity course;
 }
