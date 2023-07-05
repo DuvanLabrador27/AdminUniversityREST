@@ -1,6 +1,6 @@
 package com.adminuniversity.adminuniversityrest.entity.user;
 
-import com.adminuniversity.adminuniversityrest.entity.Course;
+import com.adminuniversity.adminuniversityrest.entity.CourseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -14,9 +14,9 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "student")
-public class Student extends User {
+public class StudentEntity extends User {
 
     @ManyToMany
     @JoinTable(name = "student_course")
-    private List<Course> courses;
+    private List<CourseEntity> courses;
 }

@@ -1,6 +1,6 @@
 package com.adminuniversity.adminuniversityrest.entity.user;
 
-import com.adminuniversity.adminuniversityrest.entity.Course;
+import com.adminuniversity.adminuniversityrest.entity.CourseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -13,9 +13,9 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "teacher")
-public class Teacher extends User {
+public class TeacherEntity extends User {
 
     @OneToMany(mappedBy = "teacher")
-    private List<Course> courses;
+    private List<CourseEntity> courses;
 
 }
