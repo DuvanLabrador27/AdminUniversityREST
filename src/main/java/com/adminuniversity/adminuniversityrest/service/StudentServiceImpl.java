@@ -17,22 +17,52 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public StudentDTO getStudentForId(Long id) {
+        StudentEntity student = this.studentRepository.findById(id).orElseThrow();
+        return mapDTO(student);
+    }
+
+    @Override
     public StudentDTO createStudent(StudentDTO studentDTO) {
-        //Convert of DTO to ENTITIES
-        StudentEntity studentToEntity = new StudentEntity();
-        studentToEntity.setEmail(studentDTO.getEmail());
-        studentToEntity.setFirstName(studentDTO.getFirstName());
-        studentToEntity.setLastName(studentDTO.getLastName());
+        StudentEntity studentEntity = mapEntity(studentDTO);
+        StudentEntity newStudent = this.studentRepository.save(studentEntity);
+        StudentDTO student = mapDTO(newStudent);
+        return student;
+    }
 
-        StudentEntity newStudent = this.studentRepository.save(studentToEntity);
+    @Override
+    public StudentDTO updateStudent(StudentDTO studentDTO, Long id) {
+        StudentEntity student = this.studentRepository.findById(id).orElseThrow();
+        student.setEmail(studentDTO.getEmail());
+        student.setFirstName(studentDTO.getFirstName());
+        student.setLastName(studentDTO.getLastName());
 
-        //Convert of ENTITIES to DTO
-        StudentDTO studentToDTO = new StudentDTO();
-        studentToDTO.setId(newStudent.getId());
-        studentToDTO.setEmail(newStudent.getEmail());
-        studentToDTO.setFirstName(newStudent.getFirstName());
-        studentToDTO.setLastName(newStudent.getLastName());
+        StudentEntity updateStudent = studentRepository.save(student);
+        return mapDTO(updateStudent);
+    }
 
-        return studentToDTO;
+    @Override
+    public void deleteStudent(Long id) {
+        StudentEntity student = this.studentRepository.findById(id).orElseThrow();
+        studentRepository.delete(student);
+    }
+
+    private StudentEntity mapEntity(StudentDTO studentDTO){
+        StudentEntity student = new StudentEntity();
+        student.setEmail(studentDTO.getEmail());
+        student.setFirstName(studentDTO.getFirstName());
+        student.setLastName(studentDTO.getLastName());
+
+        return student;
+    }
+
+    private StudentDTO mapDTO(StudentEntity studentEntity){
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setId(studentEntity.getId());
+        studentDTO.setEmail(studentEntity.getEmail());
+        studentDTO.setFirstName(studentEntity.getFirstName());
+        studentDTO.setLastName(studentEntity.getLastName());
+
+        return studentDTO;
     }
 }
