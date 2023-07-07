@@ -14,6 +14,6 @@ public class CourseDTO {
     private Long id;
     private TeacherDTO teacher;
     private List<StudentDTO> students;
-    private Map<Long, GradeDTO> grades;
+    private Map<Long, Set<GradeDTO>> grades;
 
 }
