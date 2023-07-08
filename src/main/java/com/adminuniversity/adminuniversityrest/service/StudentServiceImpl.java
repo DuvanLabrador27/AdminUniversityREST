@@ -25,6 +25,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDTO createStudent(StudentDTO studentDTO) {
         StudentEntity studentEntity = mapEntity(studentDTO);
+        studentEntity.setUsername(studentDTO.getUsername());
+        studentEntity.setPassword(studentDTO.getPassword());
         StudentEntity newStudent = this.studentRepository.save(studentEntity);
         StudentDTO student = mapDTO(newStudent);
         return student;
@@ -36,7 +38,8 @@ public class StudentServiceImpl implements StudentService {
         student.setEmail(studentDTO.getEmail());
         student.setFirstName(studentDTO.getFirstName());
         student.setLastName(studentDTO.getLastName());
-
+        student.setUsername(studentDTO.getUsername());
+        student.setPassword(studentDTO.getPassword());
         StudentEntity updateStudent = studentRepository.save(student);
         return mapDTO(updateStudent);
     }

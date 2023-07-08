@@ -27,6 +27,8 @@ public class TeacherServiceImpl implements TeacherService {
         teacherEntity.setEmail(teacherDTO.getEmail());
         teacherEntity.setFirstName(teacherDTO.getFirstName());
         teacherEntity.setLastName(teacherDTO.getLastName());
+        teacherEntity.setPassword(teacherDTO.getPassword());
+        teacherEntity.setUsername(teacherDTO.getUsername());
         TeacherEntity newTeacher = this.teacherRepository.save(teacherEntity);
         return  mapToDTO(newTeacher);
     }
