@@ -1,10 +1,16 @@
 package com.adminuniversity.adminuniversityrest.controller;
 import com.adminuniversity.adminuniversityrest.dto.entity.user.TeacherDTO;
 import com.adminuniversity.adminuniversityrest.service.TeacherService;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/teacher")
@@ -16,6 +22,63 @@ public class TeacherController {
         this.teacherService = teacherService;
     }
 
+    @GetMapping
+    public List<TeacherDTO> getAllTeachers(){
+        return this.teacherService.getAllTeachers();
+    }
+    @GetMapping("/pdf")
+    public ResponseEntity<byte[]> generateTeacherReport(){
+        try {
+            List<TeacherDTO> teachers = teacherService.getAllTeachers();
+
+            PDDocument document = new PDDocument();
+            PDPage page = new PDPage();
+            document.addPage(page);
+
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(50, 700);
+            contentStream.showText("Teacher Report");
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.newLine();
+
+            int yOffset = 20;
+            contentStream.newLineAtOffset(0, -yOffset);
+            for (TeacherDTO teacher : teachers) {
+                contentStream.newLineAtOffset(0, -yOffset);
+                contentStream.showText("ID: " + teacher.getId());
+                contentStream.newLineAtOffset(0, -yOffset);
+                contentStream.showText("First Name: " + teacher.getFirstName());
+                contentStream.newLineAtOffset(0, -yOffset);
+                contentStream.showText("Last Name: " + teacher.getLastName());
+                contentStream.newLineAtOffset(0, -yOffset);
+                contentStream.showText("Email: " + teacher.getEmail());
+                contentStream.newLineAtOffset(0, -yOffset);
+                contentStream.newLineAtOffset(0, -yOffset);
+                contentStream.newLine();
+            }
+
+            contentStream.endText();
+            contentStream.close();
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            document.save(outputStream);
+            document.close();
+
+            byte[] pdfBytes = outputStream.toByteArray();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDisposition(ContentDisposition.builder("attachment").filename("teacher_report.pdf").build());
+
+            return ResponseEntity.ok().headers(headers).body(pdfBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
     @GetMapping("/{id}")
     public ResponseEntity<TeacherDTO> getTeacherForId(@PathVariable Long id){
         try{
