@@ -6,6 +6,9 @@ import com.adminuniversity.adminuniversityrest.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class TeacherServiceImpl implements TeacherService {
 
@@ -13,6 +16,12 @@ public class TeacherServiceImpl implements TeacherService {
     @Autowired
     public TeacherServiceImpl(TeacherRepository teacherRepository){
         this.teacherRepository = teacherRepository;
+    }
+
+    @Override
+    public List<TeacherDTO> getAllTeachers() {
+        List<TeacherEntity> teacherEntities = teacherRepository.findAll();
+        return teacherEntities.stream().map(teacher -> mapToDTO(teacher)).collect(Collectors.toList());
     }
 
     @Override
