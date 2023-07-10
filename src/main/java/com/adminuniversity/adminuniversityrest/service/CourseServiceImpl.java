@@ -41,8 +41,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseEntity> getAllCourses() {
-        return courseRepository.findAll();
+    public List<CourseDTO> getAllCourses() {
+        return courseRepository.findAll().stream().map(this::mapDTO).toList();
     }
 
     @Override
@@ -214,12 +214,15 @@ public class CourseServiceImpl implements CourseService {
         courseDTO.setId(courseEntity.getId());
         courseDTO.setName(courseEntity.getName());
         if (courseEntity.getTeacher()!=null)  courseDTO.setTeacher(teacherService.mapToDTO(courseEntity.getTeacher()));
-        if (courseEntity.getStudents()!=null) courseDTO.setStudents(courseEntity.getStudents().parallelStream().map(studentService::mapDTO).toList());
+        if (courseEntity.getStudents()!=null)
+            courseDTO.setStudents(courseEntity.getStudents().stream().map(studentService::mapDTO).toList());
 
-        if (courseEntity.getGrades()!=null)    courseDTO.setGrades(courseEntity.getGrades().parallelStream().collect(Collectors.toMap(
-                o -> o.getStudent().getId(),
-                v -> gradeEntityRepository.findByCourse_IdAndStudent_Id(courseEntity.getId(), v.getStudent().getId()).stream().map(gradeService::mapDTO).collect(Collectors.toSet())
-        )));
+        try {
+            if (courseEntity.getGrades()!=null)    courseDTO.setGrades(courseEntity.getGrades().stream().collect(Collectors.toMap(
+                    o -> o.getStudent().getId(),
+                    v -> gradeEntityRepository.findByCourse_IdAndStudent_Id(courseEntity.getId(), v.getStudent().getId()).stream().map(gradeService::mapDTO).collect(Collectors.toSet())
+            )));
+        } catch (IllegalStateException ignored) {}
 
         return courseDTO;
     }
