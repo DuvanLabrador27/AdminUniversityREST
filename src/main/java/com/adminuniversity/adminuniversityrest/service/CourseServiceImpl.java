@@ -51,10 +51,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDTO createCourse(CourseDTO courseDTO) {
         CourseEntity courseEntity = mapEntity(courseDTO);
-        courseEntity.setName(courseDTO.getName());
-        CourseEntity newCourse = this.courseRepository.save(courseEntity);
-        CourseDTO course = mapDTO(newCourse);
-        return course;
+        return mapDTO(courseRepository.save(courseEntity));
     }
 
     @Override
@@ -174,9 +171,10 @@ public class CourseServiceImpl implements CourseService {
     public CourseEntity mapEntity(CourseDTO courseDTO){
         CourseEntity courseEntity = new CourseEntity();
         courseEntity.setId(courseDTO.getId());
-        courseEntity.setTeacher(teacherService.mapToEntity(courseDTO.getTeacher()));
-        courseEntity.setStudents(courseDTO.getStudents().parallelStream().map(studentService::mapEntity).toList());
-        courseEntity.setGrades(courseDTO.getGrades().entrySet().parallelStream().flatMap(
+        courseEntity.setName(courseDTO.getName());
+        if (courseDTO.getTeacher()!=null)   courseEntity.setTeacher(teacherService.mapToEntity(courseDTO.getTeacher()));
+        if (courseDTO.getStudents()!=null)  courseEntity.setStudents(courseDTO.getStudents().parallelStream().map(studentService::mapEntity).toList());
+        if (courseDTO.getGrades()!=null)    courseEntity.setGrades(courseDTO.getGrades().entrySet().parallelStream().flatMap(
                 e -> e.getValue().stream().map(gradeDTO -> gradeService.mapEntity(gradeDTO, e.getKey(), courseDTO.getId()))
         ).collect(Collectors.toSet()));
 
@@ -186,10 +184,11 @@ public class CourseServiceImpl implements CourseService {
     public CourseDTO mapDTO(CourseEntity courseEntity){
         CourseDTO courseDTO = new CourseDTO();
         courseDTO.setId(courseEntity.getId());
-        courseDTO.setTeacher(teacherService.mapToDTO(courseEntity.getTeacher()));
-        courseDTO.setStudents(courseEntity.getStudents().parallelStream().map(studentService::mapDTO).toList());
+        courseDTO.setName(courseEntity.getName());
+        if (courseEntity.getTeacher()!=null)  courseDTO.setTeacher(teacherService.mapToDTO(courseEntity.getTeacher()));
+        if (courseEntity.getStudents()!=null) courseDTO.setStudents(courseEntity.getStudents().parallelStream().map(studentService::mapDTO).toList());
 
-        courseDTO.setGrades(courseEntity.getGrades().parallelStream().collect(Collectors.toMap(
+        if (courseEntity.getGrades()!=null)    courseDTO.setGrades(courseEntity.getGrades().parallelStream().collect(Collectors.toMap(
                 o -> o.getStudent().getId(),
                 v -> gradeEntityRepository.findByCourse_IdAndStudent_Id(courseEntity.getId(), v.getStudent().getId()).stream().map(gradeService::mapDTO).collect(Collectors.toSet())
         )));
