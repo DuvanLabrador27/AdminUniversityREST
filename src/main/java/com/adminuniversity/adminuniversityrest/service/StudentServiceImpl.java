@@ -2,18 +2,30 @@ package com.adminuniversity.adminuniversityrest.service;
 
 import com.adminuniversity.adminuniversityrest.dto.entity.user.AdminDTO;
 import com.adminuniversity.adminuniversityrest.dto.entity.user.StudentDTO;
+import com.adminuniversity.adminuniversityrest.entity.CourseEntity;
 import com.adminuniversity.adminuniversityrest.entity.user.StudentEntity;
+import com.adminuniversity.adminuniversityrest.repository.CourseRepository;
 import com.adminuniversity.adminuniversityrest.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
+    private final CourseRepository courseRepository;
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository){
+    public StudentServiceImpl(StudentRepository studentRepository, CourseRepository courseRepository){
         this.studentRepository = studentRepository;
+        this.courseRepository = courseRepository;
+    }
+
+    @Override
+    public List<StudentEntity> getAllStudents() {
+        return studentRepository.findAll();
     }
 
     @Override
@@ -50,7 +62,47 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.delete(student);
     }
 
-    private StudentEntity mapEntity(StudentDTO studentDTO){
+    @Override
+    public void subscribeCourse(Long studentId, Long courseId){
+        Optional<StudentEntity> studentOptional = studentRepository.findById(studentId);
+        if(studentOptional.isPresent()){
+            Optional<CourseEntity> courseOptional = courseRepository.findById(courseId);
+            if(courseOptional.isPresent()){
+                StudentEntity studentEntity = studentOptional.get();
+                CourseEntity courseEntity = courseOptional.get();
+                studentEntity.getCourses().add(courseEntity);
+                courseEntity.getStudents().add(studentEntity);
+                studentRepository.save(studentEntity);
+                courseRepository.save(courseEntity);
+            } else {
+                System.out.println("Course not found.");
+            }
+        } else {
+            System.out.println("Student not found.");
+        }
+    }
+
+    @Override
+    public void unsubscribeCourse(Long studentId, Long courseId) {
+        Optional<StudentEntity> studentOptional = studentRepository.findById(studentId);
+        if(studentOptional.isPresent()){
+            Optional<CourseEntity> courseOptional = courseRepository.findById(courseId);
+            if(courseOptional.isPresent()){
+                StudentEntity studentEntity = studentOptional.get();
+                CourseEntity courseEntity = courseOptional.get();
+                studentEntity.getCourses().remove(courseEntity);
+                courseEntity.getStudents().remove(studentEntity);
+                studentRepository.save(studentEntity);
+                courseRepository.save(courseEntity);
+            } else {
+                System.out.println("Course not found.");
+            }
+        } else {
+            System.out.println("Student not found.");
+        }
+    }
+
+    public StudentEntity mapEntity(StudentDTO studentDTO){
         StudentEntity student = new StudentEntity();
         student.setEmail(studentDTO.getEmail());
         student.setFirstName(studentDTO.getFirstName());
@@ -59,7 +111,7 @@ public class StudentServiceImpl implements StudentService {
         return student;
     }
 
-    private StudentDTO mapDTO(StudentEntity studentEntity){
+    public StudentDTO mapDTO(StudentEntity studentEntity){
         StudentDTO studentDTO = new StudentDTO();
         studentDTO.setId(studentEntity.getId());
         studentDTO.setEmail(studentEntity.getEmail());

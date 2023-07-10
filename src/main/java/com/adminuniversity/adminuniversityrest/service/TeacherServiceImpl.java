@@ -48,7 +48,7 @@ public class TeacherServiceImpl implements TeacherService {
         this.teacherRepository.delete(teacherEntity);
     }
 
-    private TeacherEntity mapToEntity(TeacherDTO teacherDTO){
+    public TeacherEntity mapToEntity(TeacherDTO teacherDTO){
         TeacherEntity teacher = new TeacherEntity();
         teacher.setEmail(teacherDTO.getEmail());
         teacher.setFirstName(teacherDTO.getFirstName());
@@ -56,7 +56,7 @@ public class TeacherServiceImpl implements TeacherService {
         return teacher;
     }
 
-    private TeacherDTO mapToDTO(TeacherEntity teacherEntity){
+    public TeacherDTO mapToDTO(TeacherEntity teacherEntity){
         TeacherDTO teacher = new TeacherDTO();
         teacher.setId(teacherEntity.getId());
         teacher.setEmail(teacherEntity.getEmail());

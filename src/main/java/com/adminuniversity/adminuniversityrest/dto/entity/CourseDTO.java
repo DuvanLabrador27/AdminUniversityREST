@@ -12,6 +12,7 @@ import java.util.Set;
 public class CourseDTO {
 
     private Long id;
+    private String name;
     private TeacherDTO teacher;
     private List<StudentDTO> students;
     private Map<Long, Set<GradeDTO>> grades;
