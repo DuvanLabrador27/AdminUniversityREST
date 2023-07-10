@@ -2,8 +2,6 @@ package com.adminuniversity.adminuniversityrest.controller;
 
 import com.adminuniversity.adminuniversityrest.dto.entity.CourseDTO;
 import com.adminuniversity.adminuniversityrest.dto.entity.user.StudentDTO;
-import com.adminuniversity.adminuniversityrest.dto.entity.user.TeacherDTO;
-import com.adminuniversity.adminuniversityrest.entity.CourseEntity;
 import com.adminuniversity.adminuniversityrest.entity.user.StudentEntity;
 import com.adminuniversity.adminuniversityrest.service.CourseService;
 import com.adminuniversity.adminuniversityrest.service.StudentService;

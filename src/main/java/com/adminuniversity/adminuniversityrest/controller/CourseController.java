@@ -1,13 +1,9 @@
 package com.adminuniversity.adminuniversityrest.controller;
 
 import com.adminuniversity.adminuniversityrest.dto.entity.CourseDTO;
-import com.adminuniversity.adminuniversityrest.dto.entity.user.StudentDTO;
-import com.adminuniversity.adminuniversityrest.dto.entity.user.TeacherDTO;
 import com.adminuniversity.adminuniversityrest.entity.CourseEntity;
 import com.adminuniversity.adminuniversityrest.service.CourseService;
 import com.adminuniversity.adminuniversityrest.service.StudentService;
-import com.adminuniversity.adminuniversityrest.service.TeacherService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
