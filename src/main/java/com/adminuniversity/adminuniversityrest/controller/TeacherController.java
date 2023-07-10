@@ -26,6 +26,18 @@ public class TeacherController {
     public List<TeacherDTO> getAllTeachers(){
         return this.teacherService.getAllTeachers();
     }
+
+    @PostMapping
+    public ResponseEntity<?> registerTeacher(@RequestBody TeacherDTO teacherDTO) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherDTO));
+        } catch (IllegalArgumentException ignored) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     @GetMapping("/pdf")
     public ResponseEntity<byte[]> generateTeacherReport(){
         try {
