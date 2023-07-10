@@ -1,7 +1,9 @@
 package com.adminuniversity.adminuniversityrest.service;
 
 import com.adminuniversity.adminuniversityrest.dto.entity.CourseDTO;
+import com.adminuniversity.adminuniversityrest.dto.entity.GradeDTO;
 import com.adminuniversity.adminuniversityrest.entity.CourseEntity;
+import com.adminuniversity.adminuniversityrest.entity.GradeEntity;
 import com.adminuniversity.adminuniversityrest.entity.user.StudentEntity;
 import com.adminuniversity.adminuniversityrest.entity.user.TeacherEntity;
 import com.adminuniversity.adminuniversityrest.repository.CourseRepository;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -119,6 +122,31 @@ public class CourseServiceImpl implements CourseService {
             return new ResponseEntity<CourseEntity>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<CourseEntity>(courseEntity, HttpStatus.ACCEPTED);
+    }
+
+    @Override
+    public Set<GradeDTO> getStudentGrades(Long courseId, Long studentId) {
+        Set<GradeEntity> grades = gradeEntityRepository.findByCourse_IdAndStudent_Id(courseId, studentId);
+        if (grades==null) throw new IllegalArgumentException();
+
+        return grades.parallelStream().map(e -> new GradeDTO(e.getId(), e.getScore())).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<GradeDTO> addStudentGrade(Long courseId, Long studentId, float grade) {
+        Set<GradeEntity> grades = gradeEntityRepository.findByCourse_IdAndStudent_Id(courseId, studentId);
+        StudentEntity student = studentRepository.findById(studentId).orElseThrow();
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow();
+        GradeEntity gradeToAdd = new GradeEntity(null, grade, student, course);
+        gradeEntityRepository.save(gradeToAdd);
+        grades.add(gradeToAdd);
+        return grades.parallelStream().map(e -> new GradeDTO(e.getId(), e.getScore())).collect(Collectors.toSet());
+    }
+
+    @Override
+    public double getStudentAverage(Long courseId, Long studentId) {
+        Set<GradeEntity> grades = gradeEntityRepository.findByCourse_IdAndStudent_Id(courseId, studentId);
+        return grades.parallelStream().mapToDouble(value -> value.getScore().doubleValue()).average().orElse(0d);
     }
 
     @Override

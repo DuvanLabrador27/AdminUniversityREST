@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/course")
@@ -41,17 +42,51 @@ public class CourseController {
     }
 
     @PostMapping(path = "/{courseId}/student/{studentId}/add")
-    public ResponseEntity addStudent(@PathVariable Long courseId, @PathVariable Long studentId){
+    public ResponseEntity<?> addStudent(@PathVariable Long courseId, @PathVariable Long studentId){
         try{
             courseService.addStudent(courseId, studentId);
-            return new ResponseEntity(HttpStatus.ACCEPTED);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e){
-            return new ResponseEntity(HttpStatus.CONFLICT);
+            return ResponseEntity.internalServerError().body(e.getMessage());
+
+        }
+    }
+
+    @PostMapping("/{courseId}/{studentId}/grade")
+    public ResponseEntity<?> addGrade(@PathVariable Long courseId, @PathVariable Long studentId, @RequestBody String grade) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(courseService.addStudentGrade(courseId, studentId, Float.parseFloat(grade)));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/{courseId}/{studentId}/grade")
+    public ResponseEntity<?> getStudentGrades(@PathVariable Long courseId, @PathVariable Long studentId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(courseService.getStudentGrades(courseId, studentId));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/{courseId}/{studentId}/grade/average")
+    public ResponseEntity<?> getStudentAverage(@PathVariable Long courseId, @PathVariable Long studentId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(courseService.getStudentAverage(courseId, studentId));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(ex.getMessage());
         }
     }
 
     @DeleteMapping(path = "/{courseId}/student/{studentId}/delete")
-    public ResponseEntity deleteStudent(@PathVariable Long courseId, @PathVariable Long studentId){
+    public ResponseEntity<?> deleteStudent(@PathVariable Long courseId, @PathVariable Long studentId){
         try{
             courseService.deleteStudent(courseId, studentId);
             return new ResponseEntity(HttpStatus.ACCEPTED);
