@@ -90,6 +90,7 @@ public class CourseController {
             CourseDTO course = this.courseService.createCourse(courseDTO);
             return new ResponseEntity<>(course,HttpStatus.CREATED);
         }catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
     }

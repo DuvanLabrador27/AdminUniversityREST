@@ -1,14 +1,21 @@
 package com.adminuniversity.adminuniversityrest.controller;
 
+import com.adminuniversity.adminuniversityrest.dto.entity.CourseDTO;
 import com.adminuniversity.adminuniversityrest.dto.entity.user.StudentDTO;
+import com.adminuniversity.adminuniversityrest.dto.entity.user.TeacherDTO;
+import com.adminuniversity.adminuniversityrest.entity.CourseEntity;
 import com.adminuniversity.adminuniversityrest.entity.user.StudentEntity;
 import com.adminuniversity.adminuniversityrest.service.CourseService;
 import com.adminuniversity.adminuniversityrest.service.StudentService;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 @RestController
@@ -36,6 +43,71 @@ public class StudentController {
             return new ResponseEntity<StudentDTO>(studentDTO, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<StudentDTO>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> generateStudentReport(@PathVariable Long id){
+        try {
+            StudentDTO student = this.studentService.getStudentForId(id);
+
+            PDDocument document = new PDDocument();
+            PDPage page = new PDPage();
+            document.addPage(page);
+
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(50, 700);
+            contentStream.showText("Student report");
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.newLine();
+
+            int yOffset = 20;
+            contentStream.newLineAtOffset(0, -yOffset);
+            contentStream.newLineAtOffset(0, -yOffset);
+            contentStream.showText("ID: " + student.getId());
+            contentStream.newLineAtOffset(0, -yOffset);
+            contentStream.showText("First Name: " + student.getFirstName());
+            contentStream.newLineAtOffset(0, -yOffset);
+            contentStream.showText("Last Name: " + student.getLastName());
+            contentStream.newLineAtOffset(0, -yOffset);
+            contentStream.showText("Email: " + student.getEmail());
+            contentStream.newLineAtOffset(0, -yOffset);
+            contentStream.newLineAtOffset(0, -yOffset);
+            contentStream.showText("Courses subscribed: ");
+            contentStream.newLineAtOffset(0, -yOffset);
+                for(CourseDTO courses : student.getCourses()){
+                    contentStream.showText("Course name: " + courses.getName());
+                    contentStream.newLineAtOffset(0, -yOffset);
+                    contentStream.showText("ID: " + courses.getId());
+                    contentStream.newLineAtOffset(0, -yOffset);
+                    contentStream.showText("Teacher: " + courses.getTeacher());
+                    contentStream.newLineAtOffset(0, -yOffset);
+                    contentStream.showText("Grades: " + courses.getGrades());
+                    contentStream.newLineAtOffset(0, -yOffset);
+                }
+            contentStream.newLineAtOffset(0, -yOffset);
+            contentStream.newLine();
+
+            contentStream.endText();
+            contentStream.close();
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            document.save(outputStream);
+            document.close();
+
+            byte[] pdfBytes = outputStream.toByteArray();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDisposition(ContentDisposition.builder("attachment").filename("student_report.pdf").build());
+
+            return ResponseEntity.ok().headers(headers).body(pdfBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
     @PostMapping
