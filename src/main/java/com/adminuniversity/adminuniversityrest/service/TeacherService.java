@@ -1,6 +1,7 @@
 package com.adminuniversity.adminuniversityrest.service;
 
 import com.adminuniversity.adminuniversityrest.dto.entity.user.TeacherDTO;
+import com.adminuniversity.adminuniversityrest.entity.user.TeacherEntity;
 
 import java.util.List;
 
@@ -10,4 +11,6 @@ public interface TeacherService {
     public TeacherDTO updateTeacher(TeacherDTO teacherDTO, Long id);
     TeacherDTO createTeacher(TeacherDTO teacherDTO);
     public void deleteTeacher(Long id);
+    public TeacherEntity mapToEntity(TeacherDTO teacherDTO);
+    public TeacherDTO mapToDTO(TeacherEntity teacherEntity);
 }

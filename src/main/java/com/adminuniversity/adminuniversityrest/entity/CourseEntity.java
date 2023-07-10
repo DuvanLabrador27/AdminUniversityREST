@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,13 +21,16 @@ public class CourseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String name;
+
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     private TeacherEntity teacher;
 
     @ManyToMany(mappedBy = "courses")
-    private List<StudentEntity> students;
+    private List<StudentEntity> students = new ArrayList<StudentEntity>();
 
     @OneToMany(mappedBy = "course")
-    private Set<GradeEntity> grades;
+    private Set<GradeEntity> grades = new HashSet<>();
 }
