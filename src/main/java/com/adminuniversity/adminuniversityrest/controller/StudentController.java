@@ -48,7 +48,6 @@ public class StudentController {
     public ResponseEntity<byte[]> generateStudentReport(@PathVariable Long id){
         try {
             StudentDTO student = this.studentService.getStudentForId(id);
-
             PDDocument document = new PDDocument();
             PDPage page = new PDPage();
             document.addPage(page);
@@ -74,8 +73,9 @@ public class StudentController {
             contentStream.showText("Email: " + student.getEmail());
             contentStream.newLineAtOffset(0, -yOffset);
             contentStream.newLineAtOffset(0, -yOffset);
-            contentStream.showText("Courses subscribed: ");
-            contentStream.newLineAtOffset(0, -yOffset);
+            if(student.getCourses() != null){
+                contentStream.showText("Courses subscribed: ");
+                contentStream.newLineAtOffset(0, -yOffset);
                 for(CourseDTO courses : student.getCourses()){
                     contentStream.showText("Course name: " + courses.getName());
                     contentStream.newLineAtOffset(0, -yOffset);
@@ -86,6 +86,11 @@ public class StudentController {
                     contentStream.showText("Grades: " + courses.getGrades());
                     contentStream.newLineAtOffset(0, -yOffset);
                 }
+            } else {
+                contentStream.showText("This student is not subscribed in any course");
+                contentStream.newLineAtOffset(0, -yOffset);
+            }
+
             contentStream.newLineAtOffset(0, -yOffset);
             contentStream.newLine();
 
@@ -108,6 +113,7 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PostMapping
     public ResponseEntity<StudentDTO> saveStudent(@RequestBody StudentDTO studentDTO){
         try {
