@@ -43,6 +43,12 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
+    public TeacherDTO createTeacher(TeacherDTO teacherDTO) {
+        if (teacherDTO.getId()!=null) throw new IllegalArgumentException("id");
+        return mapToDTO(teacherRepository.save(mapToEntity(teacherDTO)));
+    }
+
+    @Override
     public void deleteTeacher(Long id) {
         TeacherEntity teacherEntity = this.teacherRepository.findById(id).orElseThrow();
         this.teacherRepository.delete(teacherEntity);
