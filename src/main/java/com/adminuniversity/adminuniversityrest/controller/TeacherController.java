@@ -58,19 +58,25 @@ public class TeacherController {
 
             int yOffset = 20;
             contentStream.newLineAtOffset(0, -yOffset);
-            for (TeacherDTO teacher : teachers) {
+            if(!teachers.isEmpty()){
+                for (TeacherDTO teacher : teachers) {
+                    contentStream.newLineAtOffset(0, -yOffset);
+                    contentStream.showText("ID: " + teacher.getId());
+                    contentStream.newLineAtOffset(0, -yOffset);
+                    contentStream.showText("First Name: " + teacher.getFirstName());
+                    contentStream.newLineAtOffset(0, -yOffset);
+                    contentStream.showText("Last Name: " + teacher.getLastName());
+                    contentStream.newLineAtOffset(0, -yOffset);
+                    contentStream.showText("Email: " + teacher.getEmail());
+                    contentStream.newLineAtOffset(0, -yOffset);
+
+                }
+            } else {
+                contentStream.showText("There isn't record of any teacher");
                 contentStream.newLineAtOffset(0, -yOffset);
-                contentStream.showText("ID: " + teacher.getId());
-                contentStream.newLineAtOffset(0, -yOffset);
-                contentStream.showText("First Name: " + teacher.getFirstName());
-                contentStream.newLineAtOffset(0, -yOffset);
-                contentStream.showText("Last Name: " + teacher.getLastName());
-                contentStream.newLineAtOffset(0, -yOffset);
-                contentStream.showText("Email: " + teacher.getEmail());
-                contentStream.newLineAtOffset(0, -yOffset);
-                contentStream.newLineAtOffset(0, -yOffset);
-                contentStream.newLine();
             }
+            contentStream.newLineAtOffset(0, -yOffset);
+            contentStream.newLine();
 
             contentStream.endText();
             contentStream.close();
