@@ -14,7 +14,7 @@ public interface CourseService {
     CourseDTO mapDTO(CourseEntity courseEntity);
     ResponseEntity<CourseEntity> setTeacher(Long courseId, Long teacherId);
     ResponseEntity<CourseEntity> removeTeacher(Long courseId,  Long teacherId);
-    List<CourseEntity> getAllCourses();
+    List<CourseDTO> getAllCourses();
     ResponseEntity<CourseEntity> addStudent(Long courseId, Long studentId);
     ResponseEntity<CourseEntity> deleteStudent(Long courseId, Long studentId);
 

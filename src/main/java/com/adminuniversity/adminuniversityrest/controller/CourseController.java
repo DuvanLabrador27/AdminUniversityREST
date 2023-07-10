@@ -1,7 +1,6 @@
 package com.adminuniversity.adminuniversityrest.controller;
 
 import com.adminuniversity.adminuniversityrest.dto.entity.CourseDTO;
-import com.adminuniversity.adminuniversityrest.entity.CourseEntity;
 import com.adminuniversity.adminuniversityrest.service.CourseService;
 import com.adminuniversity.adminuniversityrest.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +23,9 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CourseEntity>> getAllCourses(){
-        List<CourseEntity> courses = courseService.getAllCourses();
-        return new ResponseEntity<>(
-                courses, HttpStatus.OK
-        );
+    public ResponseEntity<?> getAllCourses(){
+        List<CourseDTO> courses = courseService.getAllCourses();
+        return ResponseEntity.ok(courses);
     }
 
     @GetMapping("/{id}")
